@@ -1,4 +1,6 @@
 #!/bin/bash
+# BASHed by xtephan @ 2012,
+# CopyLeft under the terms of GPL
 
 # Assert root
 if [[ $EUID -ne 0 ]]; then
@@ -10,6 +12,7 @@ fi
 DAILY_BACKUP_DIR="/home/xtephan"
 DAILY_EXCLUDE_DIR="/home/xtephan/Downloads;/home/xtephan/Temporary-Files;/home/xtephan/.cache"
 TTL_DAILY=5
+DAILY_INCREMENTAL="daily.snar"
 
 WEEKLY_BACKUP_DIR="/"
 WEEKLY_EXCLUDE_DIR="/tmp;/var/cache;/proc;/dev/pts;/mnt;/media"
@@ -46,14 +49,15 @@ then
   ARH_NAME="$BACKUP_LOCATION$(date +%Y%m%d)-daily.tar.gz"
   generate_exclude $DAILY_EXCLUDE_DIR
 
-  tar -zcpf $ARH_NAME --directory=$DAILY_BACKUP_DIR $EXCLUDE_DIR_CMD . 
+  tar -zcp --file $ARH_NAME --listed-incremental="$BACKUP_LOCATION$DAILY_INCREMENTAL" --directory=$DAILY_BACKUP_DIR $EXCLUDE_DIR_CMD . 
 
   echo "Done!"
   du -h $ARH_NAME
 
-  echo "Purging Older Backups"
+  echo "You Should Purging Older Backups"
 
-  find "$BACKUP_LOCATION*-daily.tar.gz" -type f -mtime $TTL_DAILY | xargs rm -v
+  find "$BACKUP_LOCATION*-daily.tar.gz" -type f -mtime $TTL_DAILY 
+  #| xargs rm -v
   
 fi
 
@@ -70,9 +74,10 @@ then
   echo "Done!"
   du -h $ARH_NAME
 
-  echo "Purging Older Backups"
+  echo "You Should Purging Older Backups"
 
-  find "$BACKUP_LOCATION*-weekly.tar.gz" -type f -mtime $TTL_WEEKLY*7 | xargs rm -v
+  find "$BACKUP_LOCATION*-weekly.tar.gz" -type f -mtime $TTL_WEEKLY*7 
+  #| xargs rm -v
 
 fi
 
