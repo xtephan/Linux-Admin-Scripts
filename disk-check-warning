@@ -1,0 +1,31 @@
+#!/bin/bash
+# BASHed by xtephan @ 2012, 
+# CopyLeft under the terms of GPL
+
+PARTITION="/dev/mapper/sda5_crypt"
+SEND_WARNING_MOUNT=7
+
+EMAIL_SUBJECT="Disk Force Recheck"
+EMAIL_TO="root"
+
+# Assert root  
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+#DAMN I fell leet hax0r
+MOUNTS_TO_RECHECK=$(tune2fs -l $PARTITION | grep -i "Mount count:" | awk -F':' 'NR==1{ t-=$2 } NR==2{ t+=$2 } END {print t}' )
+
+if [ $MOUNTS_TO_RECHECK -le $SEND_WARNING_MOUNT ]; then 
+  echo "will send mail for you"
+
+  MAIL_MSG="Partition $PARTITION will be forced rechecked in $MOUNTS_TO_RECHECK mounts.\n\n Touch the /forcefsck file for a better anger-management. \n\n Yours most humble and obedient servant, \n The Cron Daemon"
+
+  echo -e $MAIL_MSG | mail -s "$EMAIL_SUBJECT" $EMAIL_TO
+
+fi
+
+#echo $MOUNTS_TO_RECHECK 
+
+echo "Sanity Ok"                                                            

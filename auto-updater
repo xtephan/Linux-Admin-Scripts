@@ -1,0 +1,27 @@
+#!/bin/bash
+
+LOG_FILE=/tmp/auto-updater-logs
+
+echo "" > $LOG_FILE
+
+date >> $LOG_FILE
+
+echo "[!!] Updating repositories"
+apt-get update >> $LOG_FILE
+
+echo "[!!] Upgrading software"
+apt-get --assume-yes dist-upgrade >> $LOG_FILE
+
+echo "[!!] Upgrading Flash plugin"
+/usr/sbin/update-flashplugin-nonfree --install --verbose >> $LOG_FILE
+
+echo "[!!] Cleaning the mess"
+apt-get autoremove --purge --assume-yes >> $LOG_FILE
+apt-get clean --assume-yes >> $LOG_FILE
+apt-get autoclean --assume-yes >> $LOG_FILE
+
+
+echo "########################################################################"
+echo "----------------------------VERBOSE-------------------------------------"
+
+cat $LOG_FILE
