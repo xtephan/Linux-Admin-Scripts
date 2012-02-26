@@ -1,6 +1,4 @@
 #!/bin/bash
-# BASHed by xtephan @ 2012,
-# CopyLeft under the terms of GPL
 
 # Assert root
 if [[ $EUID -ne 0 ]]; then
